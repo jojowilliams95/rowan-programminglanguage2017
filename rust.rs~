@@ -1,0 +1,28 @@
+use std::collections::HashSet;
+struct Employee {
+    name: char,
+    phone: i32,
+    network: i32,
+    computer: i32,
+}
+
+fn flatten(a: &Vec<&str>, b: &Vec<&str>, c: &Vec<&str>, d: &Vec<&str>) -> Vec<&'static str> {
+    let mut abcd: Vec<&str> = [a.as_slice(), b.as_slice(), c.as_slice(), d.as_slice()].concat();
+    abcd.shrink_to_fit();
+    abcd
+}
+
+
+fn duplicates(sq: &Vec<&str>) -> bool {
+    let index = 16;
+    let set: HashSet<_> = sq.into_iter().collect();
+    if set.len() < index {
+        return false;
+    } else {
+        true
+    }
+}
+
+fn main() {
+
+}
