@@ -1,0 +1,121 @@
+with Ada.Text_IO, Ada.Integer_Text_IO;
+use Ada.Text_IO, Ada.Integer_Text_IO;
+
+procedure Jobs is
+        Dummy: character;                               --Represents either whitespace or a dummy letter
+        Num_Employees: Integer;                         --Number of Employees the user is inputting
+
+        type Shift_Array is array(1..4, 1..4) of Character;     --Array that contains work assignments of employees for each shift
+        Assignments: Shift_Array;
+
+        type Empl is record                             --Record of Employee with name and skills where 1= skilled and 0=unskilled
+                Person: Character;
+                Phone: Integer;
+                Computer: Integer;
+                Network: Integer;
+        end record;
+
+        type Skill_Array is array(1..26) of Empl;       --Array of at most 26 Employee records but at least one employee
+        Abilities: Skill_Array;
+
+        type Flat_Array is array(1..16) of Character;   --One dimensional array holding condensed Shift_Array
+        Flat: Flat_Array;
+
+        --Flattens and returns any array of type Shift_Array
+        function flatten(Assign: Shift_Array; Squish:in out Flat_Array) return Flat_Array is
+        i: Natural:= 1;
+        begin
+                for row in 1..4 loop
+                        for col in 1..4 loop
+                                Squish(i) := Assign(row, col);
+                                i:= i+1;
+                        end loop;
+                end loop;
+                return Flat;
+        end flatten;
+
+        --Iterates through flatten shift array and returns true for any employee listed twice
+        function duplicates(Sq: Flat_Array) return Boolean is
+        i: Natural:= 15;
+        begin
+                for Employee in 1..15 loop
+                        for index in 1..i loop
+                                if Sq(Employee) = Sq(Employee + index) then
+                                        return true;
+                                end if;
+                        end loop;
+                        i:= i-1;
+                end loop;
+                return false;
+        end duplicates;
+
+        --Retrieves and returns employee record using their name(Character)
+  function get_employee(x: character; sk: Skill_Array) return Empl is
+        begin
+                for Employee in 1..Num_Employees loop
+                        if x = sk(Employee).Person then
+                                return sk(Employee);
+                        end if;
+                end loop;
+                return rec: Empl := (Dummy, 0, 0, 0);
+        end get_employee;
+
+        --Checks to see if employee, given their job assignment, is qualified to work the job and returns true if they are
+        function can_work(Skill: Skill_Array; Worker: Shift_Array) return Boolean is
+        begin
+                for row in 1..4 loop
+                        for col in 1..2 loop
+                                 if get_employee(Worker(row, col), Skill).Phone = 0 then
+                                       return false;
+                                end if;
+                        end loop;
+                end loop;
+                for row in 1..4 loop
+                        if get_employee(Worker(row, 3), Skill).Computer = 0 then
+                                        return false;
+                                end if;
+                end loop;
+                for row in 1..4 loop
+                        if get_employee(Worker(row, 4), Skill).Network = 0 then
+                                        return false;
+                                end if;
+                end loop;
+                return true;
+        end can_work;
+
+begin
+        -- Read the work assignments
+        -- Store in a 2-dimensional array
+        for Shift in 1..4 loop
+                for Job in 1..3 loop
+                        Get(Assignments(Shift, Job));
+                        Get(Dummy);     -- Read the space
+                end loop;
+                Get(Assignments(Shift, 4));
+                Skip_Line;      -- Skip past the newline
+        end loop;
+       -- Read the employees' skills
+        -- Store in an array of records
+
+        Get(Num_Employees);
+        for Employee in 1..Num_Employees loop
+                Get(Abilities(Employee).Person);        -- character
+                Get(Abilities(Employee).Phone);         -- integer
+                Get(Abilities(Employee).Computer);      -- integer
+                Get(Abilities(Employee).Network);       -- integer
+                Skip_Line;      -- Prepare to read next name as character
+        end loop;
+        Flat := flatten(Assignments, Flat);             --creates flat version of Assignments(Shift_Array)
+
+        if duplicates(Flat) = true then                 --if duplicates exist, shifts are not acceptable
+                Put_Line("Not Acceptable");
+                else if can_work(Abilities, Assignments) = false then   --if employee can't do job, shifts are not acceptable
+                        Put_Line("Not Acceptable");
+                else
+                        Put_Line("Acceptable");         --means that everything follows the given guidelines
+                end if;
+        end if;
+
+end Jobs;
+
+                                                                             

@@ -1,0 +1,46 @@
+(define (jobs_ok? Assignment Employees)
+        (cond ((null? Assignment) #F)
+              ((null? Employees) #F)
+              ((duplicates? (flatten Assignment))   #F)
+              ((eq? (phone_person? (append (map car Assignment) (map cadr Assignment)) Employees) #F) #F)
+              ((eq? (computer_person? (map caddr Assignment) Employees) #F) #F)
+              ((eq? (network_person? (map cadddr Assignment) Employees) #F) #F)
+              (else     #T)))
+
+;Turns list of sub-lists into a one-dimensional list
+(define (flatten L)
+        (cond   ((null? L)      '())
+                ((list? (car L)) (append        (flatten        (car L))
+                                (flatten (cdr L))))
+                 (else  (cons   (car L)
+                                (flatten (cdr L))))))
+
+;Checks list for any elements listed more than once and that is the case, it returns true
+(define (duplicates? L)
+        (cond ((null? L) #F)
+                ((member (car L) (cdr L))       #T)
+                (else  (duplicates? (cdr L)))))
+
+;Checks to see if person is skilled to work the phone
+(define (phone_person? A E)
+  (cond ((null? A)      #T)
+        ((= (car (get_employee (car A) E)) 1) (phone_person? (cdr A) E))
+        (else   #F)))
+
+;Checks to see if person is skilled to repair computer
+(define (computer_person? A E)
+  (cond ((null? A)      #T)
+        ((= (cadr(get_employee (car A) E)) 1) (computer_person? (cdr A) E))
+        (else   #F)))
+
+;Checks to see if person is skilled to fix the network
+(define (network_person? A E)
+  (cond ((null? A)      #T)
+        ((= (caddr(get_employee (car A) E)) 1) (network_person? (cdr A) E))
+        (else   #F)))
+
+;Retrieves and returns employee skills connected with the given name
+(define (get_employee y E)
+  (cond ((null? E)      #F)
+        ((eq?   y (caar E)) (cdar E))
+        (else   (get_employee y (cdr E)))))
